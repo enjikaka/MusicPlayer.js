@@ -43,9 +43,7 @@ var MusicPlayer = {
 				totalTime: '#total-time'
 			}
 		},
-		volumeIncreaseFactor: 8,
-		volumeChangeFactor: 'width', // Width, height or value.
-		playbarChangeFactor: 'width' // Width, height or value.
+		volumeIncreaseFactor: 8
 	},
 	get: function() {
 		return $(MusicPlayer.settings.player)[0];

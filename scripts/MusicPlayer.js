@@ -1,3 +1,19 @@
+var Time = {
+	format: function(s) {
+		s = Math.floor(s);
+	    var m = Math.floor(s / 60);
+	    m = m >= 10 ? m : +m;
+	    s = Math.floor(s % 60);
+	    s = s >= 10 ? s : '0' + s;
+	    var sm = m + ':' + s;
+	    return sm;
+	},
+	seconds: function(f) {
+		f = f.split(':');
+		return (parseInt(f[0]) * 60) + parseInt(f[1]);
+	}
+};
+
 var MusicPlayer = {
 	debug: true,
 	settings: {
@@ -38,7 +54,7 @@ var MusicPlayer = {
 		if (MusicPlayer.get().currentSrc == "") {
 			// No music file loaded
 			if (MusicPlayer.debug) {
-				console.error('Cannot play');
+				console.error('Cannot play audio. There is not source.');
 			}
 			return;
 		}
@@ -59,17 +75,20 @@ var MusicPlayer = {
 	previous: function() {
 		console.log('Previous');
 	},
-	selectFile: function() {
-		console.log('Open file');
+	load: function(url) {
+		console.log('Loading file: ' + url);
+		MusicPlayer.get().src = url;
 	},
 	volume: {
 		down: function() {
-			MusicPlayer.get().volume = MusicPlayer.get().volume - (MusicPlayer.volumeIncreaseFactor / 100);
+			MusicPlayer.volume.set((MusicPlayer.get().volume - (MusicPlayer.settings.volumeIncreaseFactor / 100)) * 100);
 		},
 		up: function() {
-			MusicPlayer.get().volume = MusicPlayer.get().volume - (MusicPlayer.volumeIncreaseFactor / 100);
+			MusicPlayer.volume.set((MusicPlayer.get().volume + (MusicPlayer.settings.volumeIncreaseFactor / 100)) * 100);
 		},
 		set: function(perc) {
+			perc = perc > 100 ? 100 : perc;
+			perc = perc < 0 ? 0 : perc;
 			MusicPlayer.get().volume = (perc / 100);
 		}
 	},
@@ -109,9 +128,23 @@ var MusicPlayer = {
 				console.debug('The browser is intentionally not getting media data.');
 			}
 		},
-		volumechange: function(e) {
+		volumeChange: function(e) {
 			if (MusicPlayer.debug) {
 				console.debug('The volume of the audio was changed to ' + (MusicPlayer.get().volume * 100) + '%');
+			}
+		},
+		timeUpdate: function(e) {
+			$(MusicPlayer.settings.elements.progress.currentTime).html(Time.format(MusicPlayer.get().currentTime));
+		},
+		canPlay: function(e) {
+			if (MusicPlayer.debug) {
+				console.debug('The audio can now be played.');
+			}
+			$(MusicPlayer.settings.elements.progress.totalTime).html(Time.format(MusicPlayer.get().duration));
+		},
+		canPlayThrough: function(e) {
+			if (MusicPlayer.debug) {
+				console.debug('The audio can now be played through.');
 			}
 		}
 	},
@@ -159,6 +192,8 @@ $(window).on('load', function() {
 	console.log('  http://enji.se - http://twitter.com/enjikaka - http://github.com/enjikaka');
 	console.log('  Thanks for using this Open Source product licenced under the\n  Creative Commons Attribution-ShareAlike 3.0 Generic Licence (CC BY-SA 3.0).');
 
+	console.dir(MusicPlayer.handler);
+
 	// Bind Events
 
 	var elements = MusicPlayer.settings.elements;
@@ -176,7 +211,12 @@ $(window).on('load', function() {
 	$(MusicPlayer.settings.player).on('seeked',MusicPlayer.handler.seeked);
 	$(MusicPlayer.settings.player).on('stalled',MusicPlayer.handler.stalled);
 	$(MusicPlayer.settings.player).on('suspend',MusicPlayer.handler.suspend);
-	$(MusicPlayer.settings.player).on('volumechange',MusicPlayer.handler.volumechange);
+	$(MusicPlayer.settings.player).on('volumechange',MusicPlayer.handler.volumeChange);
+	$(MusicPlayer.settings.player).on('timeupdate',MusicPlayer.handler.timeUpdate);
+	$(MusicPlayer.settings.player).on('canplay',MusicPlayer.handler.canPlay);
+	$(MusicPlayer.settings.player).on('canplaythrough',MusicPlayer.handler.canPlay);
 
 	// End of Bind Events
+
+	MusicPlayer.load('test.mp3');
 });

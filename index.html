@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="text/javascript" src="zepto.min.js"></script>
-		<script type="text/javascript" src="MusicPlayer.js" defer></script>
+		<script type="text/javascript" src="scripts/zepto.min.js"></script>
+		<script type="text/javascript" src="scripts/MusicPlayer.js" defer></script>
 	</head>
 	<body>
 		<audio id="player"></audio>
+		<h2>Buttons</h2>
 		<button id="play">Play</button>
 		<button id="stop">Stop</button>
 		<button id="next">Next</button>
@@ -13,5 +14,8 @@
 		<button id="open-file">Open file...</button>
 		<button id="volume-down">Volume -</button>
 		<button id="volume-up">Volume +</button>
+		<h2>Info fields</h2>
+		Current time: <span id="current-time"></span><br>
+		Total time (aka duration): <span id="total-time"></span>
 	</body>
 </html>

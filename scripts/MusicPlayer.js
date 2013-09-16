@@ -37,10 +37,10 @@ var MusicPlayer = {
 				artist: '#song-artist',
 				album: '#song-album'
 			},
-			playbar: '#playbar',
 			progress: {
 				currentTime: '#current-time',
-				totalTime: '#total-time'
+				totalTime: '#total-time',
+				playbar: '#playbar'
 			}
 		},
 		volumeIncreaseFactor: 8

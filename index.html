@@ -3,6 +3,27 @@
 	<head>
 		<script type="text/javascript" src="scripts/zepto.min.js"></script>
 		<script type="text/javascript" src="scripts/MusicPlayer.js" defer></script>
+		<!-- Own style file. Not part of MusicPlayer.js -->
+		<style>
+		body {
+			margin:2em;
+			font-family: Arial, sans-serif;
+			font-size:14px;
+		}
+		.pbh {
+			width:400px;
+			height:30px;
+			background:rgb(240,240,240);
+			display:block;
+			border-radius:4px;
+			margin:0.4em 0;
+		}
+		.pb {
+			height:100%;
+			background-color:#bada55;
+			width:0%;
+		}
+		</style>
 	</head>
 	<body>
 		<audio id="player"></audio>
@@ -19,13 +40,13 @@
 		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>
 		Total time (aka duration): <span id="total-time"></span>
-		<div id="playbar-holder">
-			<div id="playbar"></div>
+		<div id="pprogress-holder" class="pbh">
+			<div id="progress-bar" class="pb"></div>
 		</div>
 		<script>
 		window.onload = function() {
 			MusicPlayer.init();
 		};
-		</script
+		</script>
 	</body>
 </html>

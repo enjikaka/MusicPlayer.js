@@ -40,8 +40,8 @@ var MusicPlayer = {
 			progress: {
 				currentTime: '#current-time',
 				totalTime: '#total-time',
-				playbar: '#playbar',
-				playbarHolder: '#playbar-holder'
+				progressBar: '#progressbar',
+				progressHolder: '#progressbar-holder'
 			}
 		},
 		volumeIncreaseFactor: 8
@@ -134,6 +134,10 @@ var MusicPlayer = {
 		},
 		timeUpdate: function(e) {
 			$(MusicPlayer.settings.elements.progress.currentTime).html(Time.format(MusicPlayer.get().currentTime));
+		
+			if ($(MusicPlayer.settings.elements.progress.progressBar) !== undefined) {
+
+			}
 		},
 		canPlay: function(e) {
 			if (MusicPlayer.debug) {

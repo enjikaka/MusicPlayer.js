@@ -135,8 +135,9 @@ var MusicPlayer = {
 		timeUpdate: function(e) {
 			$(MusicPlayer.settings.elements.progress.currentTime).html(Time.format(MusicPlayer.get().currentTime));
 		
-			if ($(MusicPlayer.settings.elements.progress.progressBar) !== undefined) {
-
+			var progressBar = $(MusicPlayer.settings.elements.progress.progressBar);
+			if (progressBar !== undefined) {
+				progressBar.css('width': '');
 			}
 		},
 		canPlay: function(e) {

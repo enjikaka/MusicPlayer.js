@@ -18,9 +18,6 @@ var MusicPlayer = {
 	debug: true,
 	settings: {
 		player: '#player',
-		isSetting: function(key) {
-			return MusicPlayer.settings[key] !== undefined;
-		},
 		elements: {
 			button: {
 				play: '#play',
@@ -40,7 +37,7 @@ var MusicPlayer = {
 			progress: {
 				currentTime: '#current-time',
 				totalTime: '#total-time',
-				progressBar: '#progressbar',
+				progressBar: '#progress-bar',
 				progressHolder: '#progressbar-holder'
 			}
 		},
@@ -77,6 +74,9 @@ var MusicPlayer = {
 	load: function(url) {
 		console.log('Loading file: ' + url);
 		MusicPlayer.get().src = url;
+	},
+	durationPercent: function() {
+		return ((MusicPlayer.get().currentTime / MusicPlayer.get().duration) * 100);
 	},
 	volume: {
 		down: function() {
@@ -137,7 +137,9 @@ var MusicPlayer = {
 		
 			var progressBar = $(MusicPlayer.settings.elements.progress.progressBar);
 			if (progressBar !== undefined) {
-				progressBar.css('width': (MusicPlayer.get().currentTime / MusicPlayer.get().duration) + '%');
+				progressBar.css('width', MusicPlayer.durationPercent() + '%');
+			} else {
+				console.error('We did not find a progressbar!');
 			}
 		},
 		canPlay: function(e) {
@@ -156,37 +158,11 @@ var MusicPlayer = {
 		// Settings
 		if (!$.isPlainObject(settingsObject)) {
 			if (MusicPlayer.debug) {
-				console.error('No settings-object available.');
+				console.warn('No settings-object available. Using default settings.');
 			}
 			return;
 		}
-		var setValues = 0;
-		$.each(settingsObject, function(index, item) {
-			if (index == "debug" && $.type(item) == 'boolean') {
-				if (MusicPlayer.debug) {
-					console.debug('Debug mode: ' + item);
-					setValues += 1;
-					return;
-				}
-			}
-			if (MusicPlayer.settings.isSetting(index)) {
-				MusicPlayer.settings[index] = item;
-				setValues += 1;
-				if (MusicPlayer.debug) {
-					console.debug('Key "' + index + '"" in settings was updated to "' + item + '".');
-				}
-			} else {
-				console.error('Key "' + index + '" is not a valid key for the settings-object and was ignored.');
-			}
-		});
-		if (setValues !== 0) {
-			//(sessionStorage.setItem('inited', true);
-		} else if (setValues == 0) {
-			if (MusicPlayer.debug) {
-				console.warn('You ran init() without any valid keys.');
-				console.debug('MusicPlayer is running with all default settings.');
-			}
-		}
+		$.extend(true, MusicPlayer.settings, settingsObject);
 		// End of Settings
 	}
 };

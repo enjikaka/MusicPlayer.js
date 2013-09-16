@@ -135,12 +135,16 @@ var MusicPlayer = {
 		timeUpdate: function(e) {
 			$(MusicPlayer.settings.elements.progress.currentTime).html(Time.format(MusicPlayer.get().currentTime));
 		
-			var progressBar = $(MusicPlayer.settings.elements.progress.progressBar);
-			if (progressBar !== undefined) {
-				progressBar.css('width', MusicPlayer.durationPercent() + '%');
-			} else {
-				console.error('We did not find a progressbar!');
-			}
+			var progressBars = $(MusicPlayer.settings.elements.progress.progressBar);
+			$.each(progressBars, function(pb) {
+				var progressBar = progressBars[pb];
+				if (progressBar.nodeName == "PROGRESS") {
+					$(progressBar).attr('max',100);
+					$(progressBar).val(MusicPlayer.durationPercent());
+				} else {
+					$(progressBar).css('width', MusicPlayer.durationPercent() + '%');
+				}
+			});
 		},
 		canPlay: function(e) {
 			if (MusicPlayer.debug) {

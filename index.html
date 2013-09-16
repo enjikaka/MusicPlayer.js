@@ -21,7 +21,7 @@
 		.pb {
 			height:100%;
 			background-color:#bada55;
-			width:0%;
+			display:block;
 		}
 		</style>
 	</head>
@@ -40,12 +40,20 @@
 		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>
 		Total time (aka duration): <span id="total-time"></span>
-		<div id="pprogress-holder" class="pbh">
-			<div id="progress-bar" class="pb"></div>
+		<div id="progress-holder" class="pbh">
+			<div class="progress-bar pb"></div>
 		</div>
+		<progress class="progress-bar"></progress>
 		<script>
 		window.onload = function() {
-			MusicPlayer.init();
+			var settings = {
+				elements: {
+					progress: {
+						progressBar: '.progress-bar'
+					}
+				}
+			};
+			MusicPlayer.init(settings);
 		};
 		</script>
 	</body>

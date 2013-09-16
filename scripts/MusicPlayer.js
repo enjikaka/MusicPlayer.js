@@ -40,7 +40,8 @@ var MusicPlayer = {
 			progress: {
 				currentTime: '#current-time',
 				totalTime: '#total-time',
-				playbar: '#playbar'
+				playbar: '#playbar',
+				playbarHolder: '#playbar-holder'
 			}
 		},
 		volumeIncreaseFactor: 8

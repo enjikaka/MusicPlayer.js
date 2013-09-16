@@ -15,8 +15,13 @@
 		<button id="volume-down">Volume -</button>
 		<button id="volume-up">Volume +</button>
 		<h2>Info fields</h2>
+		
+		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>
 		Total time (aka duration): <span id="total-time"></span>
+		<div id="playbar-holder">
+			<div id="playbar"></div>
+		</div>
 		<script>
 		window.onload = function() {
 			MusicPlayer.init();

@@ -200,6 +200,14 @@ $(window).on('load', function() {
 	$(MusicPlayer.settings.player).on('canplay',MusicPlayer.handler.canPlay);
 	$(MusicPlayer.settings.player).on('canplaythrough',MusicPlayer.handler.canPlay);
 
+
+	/*$(window).on('click',function(e) {
+		var el = e.target;
+		var pb = $(MusicPlayer.settings.elements.progress.progressBar);
+		if ($(el).className == pb.className || $(el).id == $(el).className) {
+			console.log(((e.pageX - $(el).offset().left) / $(el).offset().width) * 100);
+		}
+	});*/
 	// End of Bind Events
 
 	MusicPlayer.load('test.mp3');

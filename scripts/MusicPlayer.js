@@ -43,6 +43,9 @@ var MusicPlayer = {
 		},
 		volumeIncreaseFactor: 8
 	},
+	tmp: {
+		mouseIsDown: false
+	},
 	get: function() {
 		return $(MusicPlayer.settings.player)[0];
 	},
@@ -133,8 +136,13 @@ var MusicPlayer = {
 			}
 		},
 		timeUpdate: function(e) {
+
 			$(MusicPlayer.settings.elements.progress.currentTime).html(Time.format(MusicPlayer.get().currentTime));
 		
+			if (MusicPlayer.tmp.mouseIsDown) {
+				return;
+			}
+
 			var progressBars = $(MusicPlayer.settings.elements.progress.progressBar);
 			$.each(progressBars, function(pb) {
 				var progressBar = progressBars[pb];
@@ -156,6 +164,67 @@ var MusicPlayer = {
 			if (MusicPlayer.debug) {
 				console.debug('The audio can now be played through.');
 			}
+		},
+		mouseDown: function(e) {
+			// Is progressbar?
+			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
+				MusicPlayer.tmp.mouseIsDown = true;
+				MusicPlayer.tmp.wasPlaying = !MusicPlayer.get().paused;
+				console.log('DOWN: ' + MusicPlayer.handler.getRelativePerc(e));
+			}
+		},
+		mouseMove: function(e) {
+			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
+				if (MusicPlayer.tmp.mouseIsDown) {
+					if (e.target.nodeName == "PROGRESS") {
+						$(e.target).val(MusicPlayer.handler.getRelativePerc(e));
+					} else {
+						var pb = MusicPlayer.settings.elements.progress.progressBar;
+						pb = pb.substring(1,pb.length);
+						if (e.target.classList.contains(pb)) {
+							$(e.target).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
+						} else {
+							$($(e.target).children()[0]).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
+						}
+					}
+				}
+			}
+		},
+		mouseUp: function(e) {
+			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
+				MusicPlayer.tmp.mouseIsDown = false;
+				//MusicPlayer.get().pause();
+				MusicPlayer.get().currentTime = MusicPlayer.get().duration * MusicPlayer.handler.getRelativePerc(e);
+				console.log('This should be the new time ' + MusicPlayer.get().duration * MusicPlayer.handler.getRelativePerc(e));
+				if (MusicPlayer.tmp.wasPlaying) {
+					MusicPlayer.get().play();
+				}
+			}
+		},
+		verifyProgressBar: function(target) {
+			var pb = MusicPlayer.settings.elements.progress.progressBar;
+			pb = pb.substring(1,pb.length);
+			if ((target.classList.contains(pb) || target.id == pb) && target.nodeName == "PROGRESS") {
+				return true;
+			} else if (target.nodeName !== "PROGRESS") {
+				if (target.classList.contains(pb) || target.id == pb) {
+					return true;
+				} else {
+					var fchild = $(target).children()[0];
+					if (fchild !== undefined && $(fchild).nodeName !== "PROGRESS") {
+						var classes = fchild.classList;
+						if ((classes !== undefined && classes.length > 0 && classes.contains(pb)) || fchild.id == pb) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		},
+		getRelativePerc: function(mouse) {
+			var xpt = mouse.pageX - $(mouse.target).offset().left;
+			var width = $(mouse.target).offset().width;
+			return (xpt / width) * 100;
 		}
 	},
 	init: function(settingsObject) {
@@ -200,14 +269,9 @@ $(window).on('load', function() {
 	$(MusicPlayer.settings.player).on('canplay',MusicPlayer.handler.canPlay);
 	$(MusicPlayer.settings.player).on('canplaythrough',MusicPlayer.handler.canPlay);
 
-
-	/*$(window).on('click',function(e) {
-		var el = e.target;
-		var pb = $(MusicPlayer.settings.elements.progress.progressBar);
-		if ($(el).className == pb.className || $(el).id == $(el).className) {
-			console.log(((e.pageX - $(el).offset().left) / $(el).offset().width) * 100);
-		}
-	});*/
+	$(document).on('mousedown',MusicPlayer.handler.mouseDown);
+	$(document).on('mouseup',MusicPlayer.handler.mouseUp);
+	$(document).on('mousemove',MusicPlayer.handler.mouseMove);
 	// End of Bind Events
 
 	MusicPlayer.load('test.mp3');

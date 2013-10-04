@@ -43,6 +43,11 @@ var MusicPlayer = {
 			volume: {
 				volumeHolder: '#volume-holder',
 				volumeBar: '#volume-bar'
+			},
+			loading: {
+				loadingHolder: '#loading-holder',
+				loadingBar: '#loading-bar',
+				loadingContainer: '#loading-container'
 			}
 		},
 		volumeIncreaseFactor: 8,
@@ -182,6 +187,7 @@ var MusicPlayer = {
 				console.debug('The audio can now be played.');
 			}
 			$(MusicPlayer.settings.elements.progress.totalTime).html(Time.format(MusicPlayer.get().duration));
+			$(MusicPlayer.settings.elements.loading.loadingContainer).addClass('done-loading');
 			MusicPlayer.volume.set(MusicPlayer.settings.volume);
 		},
 		canPlayThrough: function(e) {

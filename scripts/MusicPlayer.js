@@ -181,7 +181,7 @@ var MusicPlayer = {
 					} else {
 						var pb = MusicPlayer.settings.elements.progress.progressBar;
 						pb = pb.substring(1,pb.length);
-						if (e.target.classList.contains(pb)) {
+						if (e.target.classList.contains(pb) || e.target.id == pb) {
 							$(e.target).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
 						} else {
 							$($(e.target).children()[0]).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
@@ -193,9 +193,10 @@ var MusicPlayer = {
 		mouseUp: function(e) {
 			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
 				MusicPlayer.tmp.mouseIsDown = false;
-				//MusicPlayer.get().pause();
-				MusicPlayer.get().currentTime = MusicPlayer.get().duration * MusicPlayer.handler.getRelativePerc(e);
-				console.log('This should be the new time ' + MusicPlayer.get().duration * MusicPlayer.handler.getRelativePerc(e));
+				MusicPlayer.tmp.wasPlaying = !MusicPlayer.get().paused;
+				var perc = (MusicPlayer.handler.getRelativePerc(e) / 100);
+				MusicPlayer.get().currentTime = MusicPlayer.get().duration * perc;
+				console.log('This should be the new time ('+perc+') ' + MusicPlayer.get().duration * perc);
 				if (MusicPlayer.tmp.wasPlaying) {
 					MusicPlayer.get().play();
 				}
@@ -222,8 +223,16 @@ var MusicPlayer = {
 			return false;
 		},
 		getRelativePerc: function(mouse) {
-			var xpt = mouse.pageX - $(mouse.target).offset().left;
-			var width = $(mouse.target).offset().width;
+			var target = mouse.target;
+			if (target.nodeName !== "PROGRESS") {
+				var pb = MusicPlayer.settings.elements.progress.progressBar;
+				pb = pb.substring(1,pb.length);
+				if (target.classList.contains(pb) || target.id == pb) {
+					target = target.parentNode;
+				}
+			}
+			var xpt = mouse.pageX - $(target).offset().left;
+			var width = $(target).offset().width;
 			return (xpt / width) * 100;
 		}
 	},

@@ -39,12 +39,24 @@ var MusicPlayer = {
 				totalTime: '#total-time',
 				progressBar: '#progress-bar',
 				progressHolder: '#progressbar-holder'
+			},
+			volume: {
+				volumeHolder: '#volume-holder',
+				volumeBar: '#volume-bar'
 			}
 		},
-		volumeIncreaseFactor: 8
+		volumeIncreaseFactor: 8,
+		volume: 80
 	},
 	tmp: {
 		mouseIsDown: false
+	},
+	match: function(target, query) {
+		var q = query.substring(1,query.length);
+		if (target.classList.contains(q) || target.id == q) {
+			return true;
+		}
+		return false;
 	},
 	get: function() {
 		return $(MusicPlayer.settings.player)[0];
@@ -134,6 +146,17 @@ var MusicPlayer = {
 			if (MusicPlayer.debug) {
 				console.debug('The volume of the audio was changed to ' + (MusicPlayer.get().volume * 100) + '%');
 			}
+			var volumeBars = $(MusicPlayer.settings.elements.volume.volumeBar);
+			$.each(volumeBars, function(pb) {
+				var vBar = volumeBars[pb];
+				console.log(vBar);
+				if (vBar.nodeName == "PROGRESS") {
+					$(vBar).attr('max',100);
+					$(vBar).val(MusicPlayer.get().volume * 100);
+				} else {
+					$(vBar).css('width', MusicPlayer.get().volume * 100 + '%');
+				}
+			});
 		},
 		timeUpdate: function(e) {
 
@@ -159,6 +182,7 @@ var MusicPlayer = {
 				console.debug('The audio can now be played.');
 			}
 			$(MusicPlayer.settings.elements.progress.totalTime).html(Time.format(MusicPlayer.get().duration));
+			MusicPlayer.volume.set(MusicPlayer.settings.volume);
 		},
 		canPlayThrough: function(e) {
 			if (MusicPlayer.debug) {
@@ -167,21 +191,39 @@ var MusicPlayer = {
 		},
 		mouseDown: function(e) {
 			// Is progressbar?
-			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
 				MusicPlayer.tmp.mouseIsDown = true;
 				MusicPlayer.tmp.wasPlaying = !MusicPlayer.get().paused;
-				console.log('DOWN: ' + MusicPlayer.handler.getRelativePerc(e));
+			}
+
+			// Is volumebar?
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.volume.volumeBar,e.target)) {
+				MusicPlayer.tmp.mouseIsDown = true;
 			}
 		},
 		mouseMove: function(e) {
-			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
+			// Is progressbar?
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
 				if (MusicPlayer.tmp.mouseIsDown) {
 					if (e.target.nodeName == "PROGRESS") {
 						$(e.target).val(MusicPlayer.handler.getRelativePerc(e));
 					} else {
-						var pb = MusicPlayer.settings.elements.progress.progressBar;
-						pb = pb.substring(1,pb.length);
-						if (e.target.classList.contains(pb) || e.target.id == pb) {
+						if (MusicPlayer.match(e.target, MusicPlayer.settings.elements.progress.progressBar)) {
+							$(e.target).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
+						} else {
+							$($(e.target).children()[0]).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
+						}
+					}
+				}
+			}
+
+			// Is volumebar?
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.volume.volumeBar,e.target)) {
+				if (MusicPlayer.tmp.mouseIsDown) {
+					if (e.target.nodeName == "PROGRESS") {
+						$(e.target).val(MusicPlayer.handler.getRelativePerc(e));
+					} else {
+						if (MusicPlayer.match(e.target, MusicPlayer.settings.elements.volume.volumeBar)) {
 							$(e.target).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
 						} else {
 							$($(e.target).children()[0]).css('width', MusicPlayer.handler.getRelativePerc(e) + '%');
@@ -191,32 +233,33 @@ var MusicPlayer = {
 			}
 		},
 		mouseUp: function(e) {
-			if (MusicPlayer.handler.verifyProgressBar(e.target)) {
+			// Is progressbar?
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
 				MusicPlayer.tmp.mouseIsDown = false;
 				MusicPlayer.tmp.wasPlaying = !MusicPlayer.get().paused;
 				var perc = (MusicPlayer.handler.getRelativePerc(e) / 100);
 				MusicPlayer.get().currentTime = MusicPlayer.get().duration * perc;
-				console.log('This should be the new time ('+perc+') ' + MusicPlayer.get().duration * perc);
 				if (MusicPlayer.tmp.wasPlaying) {
 					MusicPlayer.get().play();
 				}
 			}
+
+			// Is volumebar?
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.volume.volumeBar,e.target)) {
+				MusicPlayer.tmp.mouseIsDown = false;
+				MusicPlayer.volume.set(MusicPlayer.handler.getRelativePerc(e));
+			}
 		},
-		verifyProgressBar: function(target) {
-			var pb = MusicPlayer.settings.elements.progress.progressBar;
-			pb = pb.substring(1,pb.length);
-			if ((target.classList.contains(pb) || target.id == pb) && target.nodeName == "PROGRESS") {
+		verifyBar: function(which,target) {
+			if (MusicPlayer.match(target, which) && target.nodeName == "PROGRESS") {
 				return true;
 			} else if (target.nodeName !== "PROGRESS") {
-				if (target.classList.contains(pb) || target.id == pb) {
+				if (MusicPlayer.match(target, which)) {
 					return true;
 				} else {
 					var fchild = $(target).children()[0];
-					if (fchild !== undefined && $(fchild).nodeName !== "PROGRESS") {
-						var classes = fchild.classList;
-						if ((classes !== undefined && classes.length > 0 && classes.contains(pb)) || fchild.id == pb) {
-							return true;
-						}
+					if (fchild !== undefined && $(fchild).nodeName !== "PROGRESS" && MusicPlayer.match(fchild, which)) {
+						return true;
 					}
 				}
 			}
@@ -224,12 +267,8 @@ var MusicPlayer = {
 		},
 		getRelativePerc: function(mouse) {
 			var target = mouse.target;
-			if (target.nodeName !== "PROGRESS") {
-				var pb = MusicPlayer.settings.elements.progress.progressBar;
-				pb = pb.substring(1,pb.length);
-				if (target.classList.contains(pb) || target.id == pb) {
-					target = target.parentNode;
-				}
+			if (target.nodeName !== "PROGRESS" && (MusicPlayer.match(target, MusicPlayer.settings.elements.progress.progressBar) || MusicPlayer.match(target, MusicPlayer.settings.elements.volume.volumeBar))) {
+				target = target.parentNode;
 			}
 			var xpt = mouse.pageX - $(target).offset().left;
 			var width = $(target).offset().width;
@@ -253,8 +292,6 @@ $(window).on('load', function() {
 	console.log('~ Using MusicPlayer.js from Jeremy Karlsson (@enjikaka) ~');
 	console.log('  http://enji.se - http://twitter.com/enjikaka - http://github.com/enjikaka');
 	console.log('  Thanks for using this Open Source product licenced under the\n  Creative Commons Attribution-ShareAlike 3.0 Generic Licence (CC BY-SA 3.0).');
-
-	console.dir(MusicPlayer.handler);
 
 	// Bind Events
 

@@ -45,14 +45,24 @@
 			<div class="progress-bar pb"></div>
 		</div>
 		<progress class="progress-bar"></progress>
+
+		<h3>Volume</h3>
+		<div id="volume-holder" class="pbh">
+			<div class="volume-bar pb"></div>
+		</div>
+		<progress class="volume-bar"></progress>
 		<script>
 		window.onload = function() {
 			var settings = {
 				elements: {
 					progress: {
 						progressBar: '.progress-bar'
+					},
+					volume: {
+						volumeBar: '.volume-bar'
 					}
-				}
+				},
+				volume: 80
 			};
 			MusicPlayer.init(settings);
 		};

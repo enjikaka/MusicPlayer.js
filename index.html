@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<script type="text/javascript" src="scripts/zepto.min.js"></script>
 		<script type="text/javascript" src="scripts/MusicPlayer.js" defer></script>
-		<!-- Own style file. Not part of MusicPlayer.js -->
+		<!-- Style file. Not part of MusicPlayer.js -->
 		<style>
 		body {
 			margin:2em;
@@ -24,10 +24,14 @@
 			background-color:#bada55;
 			display:block;
 		}
+		.hidden {
+			display:none;
+		}
 		</style>
 	</head>
 	<body>
 		<audio id="player"></audio>
+		<input type="file" id="file-opener" class="hidden" name="files[]" multiple>
 		<h2>Buttons</h2>
 		<button id="play">Play</button>
 		<button id="stop">Stop</button>
@@ -37,6 +41,17 @@
 		<button id="volume-down">Volume -</button>
 		<button id="volume-up">Volume +</button>
 		<h2>Info fields</h2>
+		<strong>Loaded file: </strong><span id="loaded-file"></span><br>
+		<h3>ID3 Tags</h3>
+		<strong>Title: </strong><span id="id3-title"></span><br>
+		<strong>Artist: </strong><span id="id3-artist"></span><br>
+		<strong>Album: </strong><span id="id3-album"></span><br>
+		<strong>Year: </strong><span id="id3-year"></span><br>
+		<strong>Comment: </strong><span id="id3-comment"></span><br>
+		<strong>Track: </strong><span id="id3-track"></span><br>
+		<strong>Genre: </strong><span id="id3-genre"></span><br>
+		<strong>Picture: </strong><img id="id3-picture"><br>
+		<strong>Lyrics: </strong><span id="id3-lyrics"></span>
 		
 		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>

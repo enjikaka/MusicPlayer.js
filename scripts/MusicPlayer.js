@@ -28,11 +28,25 @@ var MusicPlayer = {
 				volumeDown: '#volume-down',
 				volumeUp: '#volume-up'
 			},
+			fileOpener: '#file-opener',
 			info: {
 				cover: '#album-art',
 				title: '#song-title',
 				artist: '#song-artist',
-				album: '#song-album'
+				album: '#song-album',
+				loadedFile: '#loaded-file',
+				id3: {
+					title:'#id3-title',
+					artist:'#id3-artist',
+					album:'#id3-album',
+					year:'#id3-year',
+					comment:'#id3-comment',
+					track:'#id3-track',
+					comment:'#id3-comment',
+					genre:'#id3-genre',
+					picture:'#id3-picture',
+					lyrics:'#id3-lyrics',
+				}
 			},
 			progress: {
 				currentTime: '#current-time',
@@ -55,6 +69,24 @@ var MusicPlayer = {
 	},
 	tmp: {
 		mouseIsDown: false
+	},
+	readID3Tags: function(url, fn) {
+		var tags = new ID3.getAllTags(url);
+	    $(MusicPlayer,settings.elements.info.id3.title).html(tags.title);
+	    var artist = tags.artist;
+	    $('.songName').html(tags.title);
+	    $('.songArtist').html(tags.artist);
+	    if (title == null || title == undefined) {
+	        Player.giveName('n',fn);
+	    }
+	    if (artist == null || title == undefined) {
+	        Player.giveName('a',fn);
+	    }
+	    var image = tags.picture;
+	    if (image) {
+	        var base64 = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
+	        $('img').attr('src',base64);
+	    }
 	},
 	match: function(target, query) {
 		var q = query.substring(1,query.length);
@@ -91,9 +123,29 @@ var MusicPlayer = {
 	previous: function() {
 		console.log('Previous');
 	},
+	open: function() {
+		if (MusicPlayer.debug) {
+			console.debug('Open file.');
+		}
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			$(MusicPlayer.settings.elements.fileOpener).click();
+		} else {
+			if (MusicPlayer.debug) {
+  				console.error('The File APIs are not fully supported in this browser.');
+  			}
+		}
+	},
 	load: function(url) {
-		console.log('Loading file: ' + url);
+		console.debug('Loading file...');
+		var wasPlaying = false;
+		if (!MusicPlayer.get().paused) {
+			MusicPlayer.play();
+			wasPlaying = true;
+		}
 		MusicPlayer.get().src = url;
+		if (wasPlaying) {
+			MusicPlayer.play();
+		}
 	},
 	durationPercent: function() {
 		return ((MusicPlayer.get().currentTime / MusicPlayer.get().duration) * 100);
@@ -112,6 +164,42 @@ var MusicPlayer = {
 		}
 	},
 	handler: {
+		fileSelect: function(e) {
+			var files = e.target.files;
+
+			for (var i = 0; i < files.length; i++) {
+				var f = files[i];
+				if (f.type.match('audio.*')) {
+					if (MusicPlayer.debug) {
+						console.debug('Reading file.');
+					}
+					var reader = new FileReader();
+					reader.onload = (function(theFile) {
+						return function(e) {
+							MusicPlayer.load(e.target.result);
+							$(MusicPlayer.settings.elements.info.loadedFile).html(theFile.name);
+						};
+					})(f);
+					reader.readAsDataURL(f);
+
+					if (MusicPlayer.debug) {
+						console.debug('Checking for ID3 tags.');
+					}
+					var tagReader = new FileReader();
+					tagReader.onloadend = function(e) {
+			            ID3.loadTags(file.urn, function() {
+			                MusicPlayer.readID3Tags(file.urn, file.name);
+			            }, {
+			                tags: ["title","artist","picture","album","year"],
+			                dataReader: FileAPIReader(file)
+			            });
+			        };
+					tagReader.readAsDataURL(f);
+				} else {
+					console.error('Not an audio file.');
+				}
+			}
+		},
 		play: function(e) {
 			if (MusicPlayer.debug) {
 				console.debug('The audio has been started or is no longer paused.');
@@ -154,7 +242,6 @@ var MusicPlayer = {
 			var volumeBars = $(MusicPlayer.settings.elements.volume.volumeBar);
 			$.each(volumeBars, function(pb) {
 				var vBar = volumeBars[pb];
-				console.log(vBar);
 				if (vBar.nodeName == "PROGRESS") {
 					$(vBar).attr('max',100);
 					$(vBar).val(MusicPlayer.get().volume * 100);
@@ -320,6 +407,9 @@ $(window).on('load', function() {
 	$(MusicPlayer.settings.player).on('timeupdate',MusicPlayer.handler.timeUpdate);
 	$(MusicPlayer.settings.player).on('canplay',MusicPlayer.handler.canPlay);
 	$(MusicPlayer.settings.player).on('canplaythrough',MusicPlayer.handler.canPlay);
+
+	$(MusicPlayer.settings.elements.button.open).on('click',MusicPlayer.open);
+	$(MusicPlayer.settings.elements.fileOpener).on('change',MusicPlayer.handler.fileSelect);
 
 	$(document).on('mousedown',MusicPlayer.handler.mouseDown);
 	$(document).on('mouseup',MusicPlayer.handler.mouseUp);

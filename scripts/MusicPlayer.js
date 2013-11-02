@@ -295,6 +295,8 @@ var MusicPlayer = {
 			}
 		},
 		mouseMove: function(e) {
+			if (!MusicPlayer.tmp.mouseIsDown) return;
+
 			// Is progressbar?
 			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
 				if (MusicPlayer.tmp.mouseIsDown) {
@@ -326,9 +328,10 @@ var MusicPlayer = {
 			}
 		},
 		mouseUp: function(e) {
+			MusicPlayer.tmp.mouseIsDown = false;
+
 			// Is progressbar?
 			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
-				MusicPlayer.tmp.mouseIsDown = false;
 				MusicPlayer.tmp.wasPlaying = !MusicPlayer.get().paused;
 				var perc = (MusicPlayer.handler.getRelativePerc(e) / 100);
 				MusicPlayer.get().currentTime = MusicPlayer.get().duration * perc;
@@ -341,6 +344,11 @@ var MusicPlayer = {
 			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.volume.volumeBar,e.target)) {
 				MusicPlayer.tmp.mouseIsDown = false;
 				MusicPlayer.volume.set(MusicPlayer.handler.getRelativePerc(e));
+			}
+		},
+		mouseOut: function(e) {
+			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.volume.volumeBar,e.target) || MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
+				MusicPlayer.tmp.mouseIsDown = false;
 			}
 		},
 		verifyBar: function(which,target) {

@@ -2,14 +2,21 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<script type="text/javascript" src="scripts/zepto.min.js"></script>
-		<script type="text/javascript" src="scripts/MusicPlayer.js" defer></script>
 		<!-- Style file. Not part of MusicPlayer.js -->
 		<style>
 		body {
 			margin:2em;
 			font-family: Arial, sans-serif;
 			font-size:14px;
+		}
+		.load {
+			display:none;
+		}
+		.loading .load {
+			background:green;
+			width:64px;
+			height:64px;
+			display:block;
 		}
 		.pbh {
 			width:400px;
@@ -27,9 +34,15 @@
 		.hidden {
 			display:none;
 		}
+		.cover-art {
+			width:250px;
+			height:250px;
+			display:block;
+		}
 		</style>
 	</head>
 	<body>
+		<div class="load"></div>
 		<audio id="player"></audio>
 		<input type="file" id="file-opener" class="hidden" name="files[]" multiple>
 		<h2>Buttons</h2>
@@ -42,16 +55,16 @@
 		<button id="volume-up">Volume +</button>
 		<h2>Info fields</h2>
 		<strong>Loaded file: </strong><span id="loaded-file"></span><br>
-		<h3>ID3 Tags</h3>
-		<strong>Title: </strong><span id="id3-title"></span><br>
-		<strong>Artist: </strong><span id="id3-artist"></span><br>
-		<strong>Album: </strong><span id="id3-album"></span><br>
-		<strong>Year: </strong><span id="id3-year"></span><br>
-		<strong>Comment: </strong><span id="id3-comment"></span><br>
-		<strong>Track: </strong><span id="id3-track"></span><br>
-		<strong>Genre: </strong><span id="id3-genre"></span><br>
-		<strong>Picture: </strong><img id="id3-picture"><br>
-		<strong>Lyrics: </strong><span id="id3-lyrics"></span>
+		<h3>Metadata</h3>
+		<strong>Title: </strong><span id="song-title"></span><br>
+		<strong>Artist: </strong><span id="song-artist"></span><br>
+		<strong>Album: </strong><span id="song-album"></span><br>
+		<strong>Year: </strong><span id="song-year"></span><br>
+		<strong>Comment: </strong><span id="song-comment"></span><br>
+		<strong>Track: </strong><span id="song-track"></span><br>
+		<strong>Genre: </strong><span id="song-genre"></span><br>
+		<strong>Picture: </strong><img id="song-picture" class="cover-art"><br>
+		<strong>Lyrics: </strong><span id="song-lyrics"></span>
 		
 		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>
@@ -68,6 +81,10 @@
 		<progress class="volume-bar"></progress>
 
 		<div id="loading-container"></div>
+
+		<script src="scripts/zepto.min.js"></script>
+		<script src="scripts/id3.min.js"></script>
+		<script src="scripts/MusicPlayer.js"></script>
 		<script>
 		window.onload = function() {
 			var settings = {
@@ -82,6 +99,7 @@
 				volume: 80
 			};
 			MusicPlayer.init(settings);
+
 		};
 		</script>
 	</body>

@@ -16,6 +16,17 @@ var Time = {
 
 var MusicPlayer = {
 	debug: true,
+	currentSong: {
+		title: null,
+		artist: null,
+		album: null,
+		year: null,
+		track: null,
+		comment: null,
+		genre: null,
+		picture: null,
+		lyrics: null
+	},
 	settings: {
 		player: '#player',
 		elements: {
@@ -30,23 +41,17 @@ var MusicPlayer = {
 			},
 			fileOpener: '#file-opener',
 			info: {
-				cover: '#album-art',
-				title: '#song-title',
-				artist: '#song-artist',
-				album: '#song-album',
 				loadedFile: '#loaded-file',
-				id3: {
-					title:'#id3-title',
-					artist:'#id3-artist',
-					album:'#id3-album',
-					year:'#id3-year',
-					comment:'#id3-comment',
-					track:'#id3-track',
-					comment:'#id3-comment',
-					genre:'#id3-genre',
-					picture:'#id3-picture',
-					lyrics:'#id3-lyrics',
-				}
+				title:'#song-title',
+				artist:'#song-artist',
+				album:'#song-album',
+				year:'#song-year',
+				comment:'#song-comment',
+				track:'#song-track',
+				comment:'#song-comment',
+				genre:'#song-genre',
+				picture:'#song-picture',
+				lyrics:'#song-lyrics'
 			},
 			progress: {
 				currentTime: '#current-time',
@@ -68,19 +73,73 @@ var MusicPlayer = {
 		volume: 80
 	},
 	tmp: {
-		mouseIsDown: false
+		mouseIsDown: false,
+		loading: false
 	},
-	readID3Tags: function(url, fn) {
+	loading: {
+		start: function() {
+			$('body').addClass('loading');
+			MusicPlayer.tmp.loading = true;
+			if (MusicPlayer.debug) {
+				console.debug('Loading...');
+			}
+		},
+		end: function() {
+			$('body').removeClass('loading');
+			MusicPlayer.tmp.loading = false;
+			console.debug('Done loading.');
+		}
+	},
+	getInfoFromFilename: function(name,a) {
+		name = name == null ? 'Unkown' : name;
+		name = name.replace(/_/g,' ');
+		var artist = artist == null ? 'Unkown' : artist;
+		if (name.indexOf(' - ') !== -1) {
+			name = name.split(' - ');
+			artist = name[0];
+			name = name[1];
+		}
+		name = name.split('.')[0];
+		switch (a) {
+			case 'a':
+				return artist;
+				break;
+			default:
+				return name;
+				break;
+		}
+	},
+	clearMetadataFromDOM: function() {
+		$(MusicPlayer.settings.elements.info.title).html(null);
+	    $(MusicPlayer.settings.elements.info.artist).html(null);
+	    $(MusicPlayer.settings.elements.info.album).html(null);
+	    $(MusicPlayer.settings.elements.info.year).html(null);
+	    $(MusicPlayer.settings.elements.info.comment).html(null);
+	    $(MusicPlayer.settings.elements.info.track).html(null);
+	    $(MusicPlayer.settings.elements.info.genre).html(null);
+	    $(MusicPlayer.settings.elements.info.lyrics).html(null);
+	},
+	readMetadata: function(url, filename) {
+		MusicPlayer.clearMetadataFromDOM();
 		var tags = new ID3.getAllTags(url);
-	    $(MusicPlayer,settings.elements.info.id3.title).html(tags.title);
 	    var artist = tags.artist;
-	    $('.songName').html(tags.title);
-	    $('.songArtist').html(tags.artist);
-	    if (title == null || title == undefined) {
-	        Player.giveName('n',fn);
+	    var title = tags.title;
+	    var fn = filename;
+	    $(MusicPlayer.settings.elements.info.album).html(tags.album);
+	    $(MusicPlayer.settings.elements.info.year).html(tags.year);
+	    $(MusicPlayer.settings.elements.info.comment).html(tags.comment);
+	    $(MusicPlayer.settings.elements.info.track).html(tags.track);
+	    $(MusicPlayer.settings.elements.info.genre).html(tags.genre);
+	    $(MusicPlayer.settings.elements.info.lyrics).html(tags.lyrics);
+	    if (title === undefined) {
+	        $(MusicPlayer.settings.elements.info.title).html(MusicPlayer.getInfoFromFilename(fn,'n'));
+	    } else {
+	    	$(MusicPlayer.settings.elements.info.title).html(tags.title);
 	    }
-	    if (artist == null || title == undefined) {
-	        Player.giveName('a',fn);
+	    if (artist === undefined) {
+	        $(MusicPlayer.settings.elements.info.artist).html(MusicPlayer.getInfoFromFilename(fn,'a'));
+	    } else {
+	    	 $(MusicPlayer.settings.elements.info.artist).html(tags.artist);
 	    }
 	    var image = tags.picture;
 	    if (image) {
@@ -166,10 +225,10 @@ var MusicPlayer = {
 	handler: {
 		fileSelect: function(e) {
 			var files = e.target.files;
-
+			MusicPlayer.loading.start();
 			for (var i = 0; i < files.length; i++) {
-				var f = files[i];
-				if (f.type.match('audio.*')) {
+				var file = files[i];
+				if (file.type.match('audio.*')) {
 					if (MusicPlayer.debug) {
 						console.debug('Reading file.');
 					}
@@ -179,8 +238,8 @@ var MusicPlayer = {
 							MusicPlayer.load(e.target.result);
 							$(MusicPlayer.settings.elements.info.loadedFile).html(theFile.name);
 						};
-					})(f);
-					reader.readAsDataURL(f);
+					})(file);
+					reader.readAsDataURL(file);
 
 					if (MusicPlayer.debug) {
 						console.debug('Checking for ID3 tags.');
@@ -188,13 +247,13 @@ var MusicPlayer = {
 					var tagReader = new FileReader();
 					tagReader.onloadend = function(e) {
 			            ID3.loadTags(file.urn, function() {
-			                MusicPlayer.readID3Tags(file.urn, file.name);
+			                MusicPlayer.readMetadata(file.urn, file.name);
 			            }, {
 			                tags: ["title","artist","picture","album","year"],
 			                dataReader: FileAPIReader(file)
 			            });
 			        };
-					tagReader.readAsDataURL(f);
+					tagReader.readAsDataURL(file);
 				} else {
 					console.error('Not an audio file.');
 				}
@@ -273,9 +332,9 @@ var MusicPlayer = {
 			if (MusicPlayer.debug) {
 				console.debug('The audio can now be played.');
 			}
+			MusicPlayer.loading.end();
 			$(MusicPlayer.settings.elements.progress.totalTime).html(Time.format(MusicPlayer.get().duration));
 			$(MusicPlayer.settings.elements.loading.loadingContainer).addClass('done-loading');
-			MusicPlayer.volume.set(MusicPlayer.settings.volume);
 		},
 		canPlayThrough: function(e) {
 			if (MusicPlayer.debug) {
@@ -347,9 +406,7 @@ var MusicPlayer = {
 			}
 		},
 		mouseOut: function(e) {
-			if (MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.volume.volumeBar,e.target) || MusicPlayer.handler.verifyBar(MusicPlayer.settings.elements.progress.progressBar,e.target)) {
-				MusicPlayer.tmp.mouseIsDown = false;
-			}
+			MusicPlayer.tmp.mouseIsDown = false;
 		},
 		verifyBar: function(which,target) {
 			if (MusicPlayer.match(target, which) && target.nodeName == "PROGRESS") {
@@ -377,6 +434,7 @@ var MusicPlayer = {
 		}
 	},
 	init: function(settingsObject) {
+		MusicPlayer.volume.set(MusicPlayer.settings.volume);
 		// Settings
 		if (!$.isPlainObject(settingsObject)) {
 			if (MusicPlayer.debug) {

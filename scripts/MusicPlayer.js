@@ -144,7 +144,9 @@ var MusicPlayer = {
 		    MusicPlayer.metadata.year = tags.year;
 		    MusicPlayer.metadata.lyrics = tags.lyrics;
 		    var img = tags.picture;
-		    MusicPlayer.metadata.picture = "data:" + img.format + ";base64," + Base64.encodeBytes(img.data);
+            if (img !== undefined) {
+                MusicPlayer.metadata.picture = "data:" + img.format + ";base64," + Base64.encodeBytes(img.data);
+            }
 	    	if (MusicPlayer.metadata.title === undefined) {
 		        MusicPlayer.metadata.title = MusicPlayer.getInfoFromFilename(fn,'n');
 		    }
@@ -209,7 +211,7 @@ var MusicPlayer = {
         }
         MusicPlayer.get().src = url
         document.querySelector(MusicPlayer.settings.elements.waveformImage).alt = "Loading waveform...";
-        var awg = new WaveformGenerator(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#bada55', function(a) {
+        var awg = new WaveformGenerator(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#2ecc71', function(a) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
         });
         if (wasPlaying) {
@@ -486,5 +488,5 @@ $(window).on('load', function() {
     $(document).on('mousemove', MusicPlayer.handler.mouseMove);
     // End of Bind Events
 
-    MusicPlayer.load('test.mp3');
+    //MusicPlayer.load('test.mp3');
 });

@@ -25,14 +25,14 @@
 		.pbh {
 			width:400px;
 			height:30px;
-			background:rgb(240,240,240);
+			background:#bdc3c7;
 			display:block;
 			border-radius:4px;
 			margin:0.4em 0;
 		}
 		.pb {
 			height:100%;
-			background-color:#bada55;
+			background-color:#2ecc71;
 			display:block;
 		}
 		.hidden {
@@ -42,6 +42,14 @@
 			width:250px;
 			height:250px;
 			display:block;
+		}
+		button {
+			background-color:#3498db;
+			color:white;
+			border:none;
+			padding:0.5em 1em;
+			font-size:14px;
+			border-radius:4px;
 		}
 		</style>
 	</head>
@@ -57,21 +65,6 @@
 		<button id="open-file-button">Open file...</button>
 		<button id="volume-down-button">Volume -</button>
 		<button id="volume-up-button">Volume +</button>
-		<h2>Info fields</h2>
-		<strong>Loaded file: </strong><span id="loaded-file"></span><br>
-		<h3>Metadata</h3>
-		<strong>Title: </strong><span id="song-title"></span><br>
-		<strong>Artist: </strong><span id="song-artist"></span><br>
-		<strong>Album: </strong><span id="song-album"></span><br>
-		<strong>Year: </strong><span id="song-year"></span><br>
-		<strong>Comment: </strong><span id="song-comment"></span><br>
-		<strong>Track: </strong><span id="song-track"></span><br>
-		<strong>Genre: </strong><span id="song-genre"></span><br>
-		<strong>Picture: </strong><img id="song-picture" class="cover-art"><br>
-		<strong>Lyrics: </strong><span id="song-lyrics"></span>
-		
-		<h2>Waveform</h2>
-		<img id="waveform-imagery" width="400" height="100" alt="Waveform">
 
 		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>
@@ -88,6 +81,23 @@
 		<progress class="volume-bar"></progress>
 
 		<div id="loading-container"></div>
+
+		<h2>Waveform</h2>
+		<img id="waveform-imagery" width="400" height="100" alt="Waveform">
+
+		<h2>Info fields</h2>
+		<strong>Loaded file: </strong><span id="loaded-file"></span><br>
+
+		<h3>Metadata</h3>
+		<strong>Picture: </strong><img id="song-picture" class="cover-art"><br>
+		<strong>Title: </strong><span id="song-title"></span><br>
+		<strong>Artist: </strong><span id="song-artist"></span><br>
+		<strong>Album: </strong><span id="song-album"></span><br>
+		<strong>Year: </strong><span id="song-year"></span><br>
+		<strong>Comment: </strong><span id="song-comment"></span><br>
+		<strong>Track: </strong><span id="song-track"></span><br>
+		<strong>Genre: </strong><span id="song-genre"></span><br>
+		<strong>Lyrics: </strong><span id="song-lyrics"></span>
 
 		<script src="scripts/zepto.min.js"></script>
 		<script src="scripts/id3.min.js"></script>

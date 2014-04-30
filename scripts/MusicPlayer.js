@@ -204,19 +204,12 @@ var MusicPlayer = {
     },
     load: function(url) {
         console.debug('Loading file...');
-        var wasPlaying = false;
-        if (!MusicPlayer.get().paused) {
-            MusicPlayer.play();
-            wasPlaying = true;
-        }
-        MusicPlayer.get().src = url
+        MusicPlayer.get().src = url;
+        document.querySelector(MusicPlayer.settings.elements.waveformImage).src = 'loading.png';
         document.querySelector(MusicPlayer.settings.elements.waveformImage).alt = "Loading waveform...";
         var awg = new WaveformGenerator(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#2ecc71', function(a) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
         });
-        if (wasPlaying) {
-            MusicPlayer.play();
-        }
     },
     durationPercent: function() {
         return ((MusicPlayer.get().currentTime / MusicPlayer.get().duration) * 100);
@@ -341,6 +334,9 @@ var MusicPlayer = {
             }
             $(MusicPlayer.settings.elements.progress.totalTime).html(Time.format(MusicPlayer.get().duration));
             $(MusicPlayer.settings.elements.loading.loadingContainer).removeClass('loading');
+            if (MusicPlayer.get().paused) {
+                MusicPlayer.play();
+            }
         },
         canPlayThrough: function(e) {
             if (MusicPlayer.debug) {

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<!-- Style file. Not part of MusicPlayer.js -->
+		<style>
+		body {
+			margin:2em;
+			font-family: Arial, sans-serif;
+			font-size:14px;
+		}
+		.load {
+			display:none;
+		}
+		.loading .load {
+			background:green;
+			width:64px;
+			height:64px;
+			display:block;
+		}
+		.pbh {
+			width:400px;
+			height:30px;
+			background:rgb(240,240,240);
+			display:block;
+			border-radius:4px;
+			margin:0.4em 0;
+		}
+		.pb {
+			height:100%;
+			background-color:#bada55;
+			display:block;
+		}
+		.hidden {
+			display:none;
+		}
+		.cover-art {
+			width:250px;
+			height:250px;
+			display:block;
+		}
+		</style>
+	</head>
+	<body>
+		<div class="load"></div>
+		<audio id="player"></audio>
+		<input type="file" id="file-opener" class="hidden" name="files[]" multiple>
+		<h2>Buttons</h2>
+		<button id="play">Play</button>
+		<button id="stop">Stop</button>
+		<button id="next">Next</button>
+		<button id="previous">Previous</button>
+		<button id="open-file">Open file...</button>
+		<button id="volume-down">Volume -</button>
+		<button id="volume-up">Volume +</button>
+		<h2>Info fields</h2>
+		<strong>Loaded file: </strong><span id="loaded-file"></span><br>
+		<h3>Metadata</h3>
+		<strong>Title: </strong><span id="song-title"></span><br>
+		<strong>Artist: </strong><span id="song-artist"></span><br>
+		<strong>Album: </strong><span id="song-album"></span><br>
+		<strong>Year: </strong><span id="song-year"></span><br>
+		<strong>Comment: </strong><span id="song-comment"></span><br>
+		<strong>Track: </strong><span id="song-track"></span><br>
+		<strong>Genre: </strong><span id="song-genre"></span><br>
+		<strong>Picture: </strong><img id="song-picture" class="cover-art"><br>
+		<strong>Lyrics: </strong><span id="song-lyrics"></span>
+		
+		<h2>Progress</h2>
+		Current time: <span id="current-time"></span><br>
+		Total time (aka duration): <span id="total-time"></span>
+		<div id="progress-holder" class="pbh">
+			<div class="progress-bar pb"></div>
+		</div>
+		<progress class="progress-bar"></progress>
+
+		<h3>Volume</h3>
+		<div id="volume-holder" class="pbh">
+			<div class="volume-bar pb"></div>
+		</div>
+		<progress class="volume-bar"></progress>
+
+		<div id="loading-container"></div>
+
+		<script src="scripts/codecs/classlist.js"></script>
+		<script>
+		var unsupported;
+		if (!window.Audio || !('mozWriteAudio' in new Audio()) && !window.AudioContext && !window.webkitAudioContext) {
+		    unsupported = true;
+		    document.body.classList.add("unsupported");
+		}
+		</script>
+		<script src="scripts/codecs/dgplayer.js"></script>
+		<script src="scripts/codecs/auroraplayer.js"></script>
+		<script src="scripts/codecs/aurora.js"></script>
+		<script src="scripts/codecs/flac.js"></script>
+		<script src="scripts/codecs/mp3.js"></script>
+		<script src="scripts/codecs/aac.js"></script>
+		<script src="scripts/codecs/alac.js"></script>
+		<script>
+		var _sampleRate = (function() {
+			var AudioContext = (window.AudioContext || window.webkitAudioContext);
+			if (!AudioContext) {
+				return 44100;
+			}
+			return new AudioContext().sampleRate;
+		}());
+
+		var dplayer, onplay;
+
+		(function(DGPlayer){
+			if (unsupported) {
+				return;
+			}
+
+			DGPlayer.volume = 100;
+
+			var url = '';
+
+			DGPlayer.on('play', onplay = function(){
+				if (dplayer) {
+					dplayer.disconnect();
+				}
+
+				dplayer = new DGAuroraPlayer(AV.Player.fromURL(url), DGPlayer);
+				DGPlayer.off('play', onplay);
+			});
+
+			DGPlayer.on('file', function(file) {        
+				if (file) {
+					if (dplayer) {
+						dplayer.disconnect();
+					}
+					dplayer = new DGAuroraPlayer(AV.Player.fromFile(file), DGPlayer);
+					DGPlayer.off('play', onplay);
+				}
+			});
+		}(DGPlayer(document.getElementById('dgplayer'))));
+		</script>
+		<script src="scripts/codecs/aurora.js"></script>
+		<script src="scripts/codecs/flac.js"></script>
+		<script src="scripts/codecs/mp3.js"></script>
+		<script src="scripts/zepto.min.js"></script>
+		<script src="scripts/id3.min.js"></script>
+		<script src="scripts/MusicPlayer.js"></script>
+		<script>
+		window.onload = function() {
+			var settings = {
+				elements: {
+					progress: {
+						progressBar: '.progress-bar'
+					},
+					volume: {
+						volumeBar: '.volume-bar'
+					}
+				},
+				volume: 80
+			};
+			MusicPlayer.init(settings);
+
+		};
+		</script>
+	</body>
+</html>

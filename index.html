@@ -4,6 +4,10 @@
 		<meta charset="utf-8">
 		<!-- Style file. Not part of MusicPlayer.js -->
 		<style>
+		html, body {
+			-webkit-user-select:none;
+			user-select:none;
+		}
 		body {
 			margin:2em;
 			font-family: Arial, sans-serif;
@@ -44,15 +48,15 @@
 	<body>
 		<div class="load"></div>
 		<audio id="player"></audio>
-		<input type="file" id="file-opener" class="hidden" name="files[]" multiple>
+		<input type="file" id="file-opener" class="hidden" name="files[]">
 		<h2>Buttons</h2>
-		<button id="play">Play</button>
-		<button id="stop">Stop</button>
-		<button id="next">Next</button>
-		<button id="previous">Previous</button>
-		<button id="open-file">Open file...</button>
-		<button id="volume-down">Volume -</button>
-		<button id="volume-up">Volume +</button>
+		<button id="play-button">Play</button>
+		<button id="stop-button">Stop</button>
+		<button id="next-button">Next</button>
+		<button id="previous-button">Previous</button>
+		<button id="open-file-button">Open file...</button>
+		<button id="volume-down-button">Volume -</button>
+		<button id="volume-up-button">Volume +</button>
 		<h2>Info fields</h2>
 		<strong>Loaded file: </strong><span id="loaded-file"></span><br>
 		<h3>Metadata</h3>
@@ -66,6 +70,9 @@
 		<strong>Picture: </strong><img id="song-picture" class="cover-art"><br>
 		<strong>Lyrics: </strong><span id="song-lyrics"></span>
 		
+		<h2>Waveform</h2>
+		<img id="waveform-imagery" width="400" height="100" alt="Waveform">
+
 		<h2>Progress</h2>
 		Current time: <span id="current-time"></span><br>
 		Total time (aka duration): <span id="total-time"></span>
@@ -84,6 +91,7 @@
 
 		<script src="scripts/zepto.min.js"></script>
 		<script src="scripts/id3.min.js"></script>
+		<script src="scripts/WaveformGenerator.min.js"></script>
 		<script src="scripts/MusicPlayer.js"></script>
 		<script>
 		window.onload = function() {

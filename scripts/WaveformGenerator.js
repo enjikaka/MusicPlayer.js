@@ -1,6 +1,8 @@
 window.waveformCanvas = document.createElement('canvas');
 window.waveformCanvasContext = window.waveformCanvas.getContext('2d');
-window.AudioContext = window.AudioContext||window.webkitAudioContext;
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+window.waveformBarWidth = 1;
+window.waveformBarGap = false;
 
 function BufferLoader(context, urlList, callback) {
   this.context = context;
@@ -10,48 +12,46 @@ function BufferLoader(context, urlList, callback) {
   this.loadCount = 0;
 }
 
-
-/* BufferLoader */
-
 BufferLoader.prototype.loadBuffer = function(url, index) {
-  var request = new XMLHttpRequest();
-  request.open("GET", url, true);
-  request.responseType = "arraybuffer";
-  var loader = this;
-  request.onload = function() {
-    loader.context.decodeAudioData(
-      request.response,
-      function(buffer) {
-        if (!buffer) {
-          alert('error decoding file data: ' + url);
-          return;
-        }
-        loader.bufferList[index] = buffer;
-        if (++loader.loadCount == loader.urlList.length)
-          loader.onload(loader.bufferList);
-      },
-      function(error) {
-        console.error('decodeAudioData error', error);
-      }
-    );
-  }
-  request.onerror = function() {
-    alert('BufferLoader: XHR error');
-  }
-  request.send();
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'arraybuffer';
+	var loader = this;
+	xhr.onload = function() {
+		loader.context.decodeAudioData(
+			xhr.response,
+			function(buffer) {
+				if (!buffer) {
+					console.error('Error decoding file data: ' + url);
+					return;
+			}
+			loader.bufferList[index] = buffer;
+			if (++loader.loadCount == loader.urlList.length)
+				loader.onload(loader.bufferList);
+			},
+			function(error) {
+				console.error('DecodeAudioData error', error);
+			}
+		);
+	};
+	xhr.onerror = function() {
+		console.error('BufferLoader: XHR error');
+	}
+	xhr.send();
 }
 
 BufferLoader.prototype.load = function() {
-  for (var i = 0; i < this.urlList.length; ++i)
-  this.loadBuffer(this.urlList[i], i);
+	for (var i = 0; i < this.urlList.length; ++i) {
+		this.loadBuffer(this.urlList[i], i);
+	}
 }
 
-/* End BufferLoader */
-
-function WaveformGenerator(file,width,height,color,retFunc) {
+function WaveformGenerator(file,width,height,color,barWidth,gaps,retFunc) {
 	localStorage.setItem('color', color);
 	window.waveformCanvas.width = width;
 	window.waveformCanvas.height = height;
+	window.waveformBarWidth = parseInt(barWidth);
+	window.waveformBarGap = parseInt(gaps);
 	window.retFunc = retFunc;
 	window.waveformContext = new AudioContext();
 	var bufferLoader = new BufferLoader(window.waveformContext,[file],function(bufferList) {
@@ -69,17 +69,15 @@ WaveformGenerator.bufferExtract = function(sections, out) {
 	var i = 0;
 	var f = function() {
 		var end, pos, res;
-		end = i + 10;
-		res = [];
+		end = len;
+		console.log(end);
 		while (i < end) {
 			pos = i * len;
 			out(i, WaveformGenerator.bufferMeasure(pos, pos + len, buffer));
-			i++;
+			i += window.waveformBarWidth;
 			if (i >= sections) {
 				clearInterval(inv);
 				break;
-			} else {
-				res.push(void 0);
 			}
 		}
 		if (i == sections) {
@@ -105,5 +103,9 @@ WaveformGenerator.drawBar = function(i, val) {
 	ctx.fillStyle = ccl !== undefined ? ccl : 'black';
 	var h;
 	h = val * 50 * window.waveformCanvas.height;
-	return ctx.fillRect(i, window.waveformCanvas.height / 2 - h / 2, 1, h);
+	var barWidth = window.waveformBarWidth;
+	if (window.waveformBarGap == 1) {
+		barWidth *= 0.75;
+	} 
+	return ctx.fillRect(i, window.waveformCanvas.height / 2 - h / 2, barWidth, h);
 };

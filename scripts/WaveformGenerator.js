@@ -2,7 +2,7 @@ window.waveformCanvas = document.createElement('canvas');
 window.waveformCanvasContext = window.waveformCanvas.getContext('2d');
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.waveformBarWidth = 1;
-window.waveformBarGap = false;
+window.waveformBarGap = 0;
 
 function BufferLoader(context, urlList, callback) {
   this.context = context;
@@ -51,7 +51,7 @@ function WaveformGenerator(file,width,height,color,barWidth,gaps,retFunc) {
 	window.waveformCanvas.width = width;
 	window.waveformCanvas.height = height;
 	window.waveformBarWidth = parseInt(barWidth);
-	window.waveformBarGap = parseInt(gaps);
+	window.waveformBarGap = parseFloat(gaps);
 	window.retFunc = retFunc;
 	window.waveformContext = new AudioContext();
 	var bufferLoader = new BufferLoader(window.waveformContext,[file],function(bufferList) {
@@ -104,8 +104,8 @@ WaveformGenerator.drawBar = function(i, val) {
 	var h;
 	h = val * 50 * window.waveformCanvas.height;
 	var barWidth = window.waveformBarWidth;
-	if (window.waveformBarGap == 1) {
-		barWidth *= 0.75;
+	if (window.waveformBarGap !== 0) {
+		barWidth *= Math.abs(1 - window.waveformBarGap);
 	} 
 	return ctx.fillRect(i, window.waveformCanvas.height / 2 - h / 2, barWidth, h);
 };

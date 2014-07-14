@@ -95,11 +95,15 @@
 			<option value="1">1</option>
 			<option value="2">2</option>
 			<option value="4" selected>4</option>
+			<option value="8">8</option>
+			<option value="3">3</option>
 		</select>
 		<label for="bar-gaps">Bar-gaps</label>
 		<select name="bar-gaps" id="bar-gaps">
-			<option value="0">false</option>
-			<option value="1" selected>true</option>
+			<option value="0">0</option>
+			<option value="0.2">0.2</option>
+			<option value="0.5">0.5</option>
+			<option value="0.8" selected>0.8</option>
 		</select>
 		<button id="remake-waves">Re-generate waveform</button>
 
@@ -135,11 +139,6 @@
 				volume: 80
 			};
 			MusicPlayer.init(settings);
-			document.querySelector('#bar-width').onchange = function() {
-				if (this.value == 1) {
-					document.querySelector('#bar-gaps option').setAttribute('selected', 'selected');
-				}
-			};
 			document.querySelector('#remake-waves').onclick = function() {
 				var awg = new WaveformGenerator(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, function(a) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;

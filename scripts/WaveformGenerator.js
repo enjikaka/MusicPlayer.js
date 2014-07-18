@@ -1,7 +1,7 @@
 window.waveformCanvas = document.createElement('canvas');
 window.waveformCanvasContext = window.waveformCanvas.getContext('2d');
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-window.waveformContext = new AudioContext();
+window.waveformContext = new AudioContext() || new webkitAudioContext();
 window.waveformBarWidth = 1;
 window.waveformBarGap = 0;
 window.waveformBarAlign = 0;
@@ -83,7 +83,7 @@ function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
 	bufferLoader.load();
 }
 
-Waveform.bufferExtract = function(sections, out) {
+Waveform.bufferExtract = function(sections) {
 	var buffer = window.waveformBuffer.getChannelData(0);
 	var len = Math.floor(buffer.length / sections);
 	for (var i = 0; i < sections; i += window.waveformBarWidth) {
@@ -96,8 +96,8 @@ Waveform.bufferExtract = function(sections, out) {
 };
 
 Waveform.bufferMeasure = function(a, b, data) {
-	var sum = 0.0, ref;
-	for (var i = a, ref = b - 1; a <= ref ? i <= ref : i >= ref; a <= ref ? i++ : i--) {
+	var sum = 0.0, ref, i;
+	for (i = a, ref = b - 1; a <= ref ? i <= ref : i >= ref; a <= ref ? i++ : i--) {
 		sum += Math.pow(data[i],2);
 	}
 	return Math.sqrt(sum / data.length);

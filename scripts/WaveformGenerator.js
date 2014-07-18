@@ -110,19 +110,13 @@ Waveform.bufferMeasure = function(a, b, data) {
 Waveform.drawBar = function(i, val) {
 	var ctx = window.waveformCanvasContext;
 	ctx.fillStyle = window.waveformBarColor;
-
 	var h = val * 40 * window.waveformCanvas.height, w = window.waveformBarWidth;
 	if (window.waveformBarGap !== 0) {
 		w *= Math.abs(1 - window.waveformBarGap);
 	}
 	var x = i + (w / 2), y = window.waveformCanvas.height - h, path = document.createElement('path');
-	if (window.waveformBarAlign === 1) {
-		path.setAttribute('d','M'+x+' '+y+' L'+parseFloat(x)+' '+y+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+y+' Z');
-		
-	} else {
-		y = window.waveformCanvas.height / 2 - h / 2;
-		path.setAttribute('d','M'+x+' '+y+' L'+parseFloat(x)+' '+y+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+y+' Z');
-	}
+	y = (window.waveformBarAlign !== 1) ? window.waveformCanvas.height / 2 - h / 2 : y;
+	path.setAttribute('d','M'+x+' '+y+' L'+parseFloat(x)+' '+y+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+y+' Z');
 	window.svg.appendChild(path);
 	return ctx.fillRect(i, y, w, h);
 };

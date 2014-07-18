@@ -55,18 +55,15 @@ BufferLoader.prototype.load = function() {
 };
 
 function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
-	barWidth = parseInt(barWidth);
-	gapWidth = parseFloat(gapWidth);
 	color = (color !== undefined ? color : 'black');
 	window.waveformCanvas.width = width;
 	window.waveformCanvas.height = height;
-	window.waveformBarWidth = barWidth;
-	window.waveformBarGap = gapWidth;
+	window.waveformBarWidth = parseInt(barWidth);
+	window.waveformBarGap = parseFloat(gapWidth);
 	window.waveformBarAlign = parseInt(align);
 	window.waveformBarColor = color;
 	window.retFunc = retFunc;
 
-	// SVG stuff
 	window.svg = document.createElement('svg');
 	window.svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 	window.svg.setAttribute('version', '1.1');
@@ -75,8 +72,7 @@ function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
 	var sssc = document.createTextNode('<![CDATA[path{stroke:' + color + ';stroke-width:' + ((barWidth !== 0) ? (barWidth * Math.abs(1 - gapWidth)) : barWidth) + '}]]>');
 	svgStyleSheet.appendChild(sssc);
 	window.svg.appendChild(svgStyleSheet);
-	window.svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-	// End of SVG stuff.
+	window.svg.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);
 
 	var bufferLoader = new BufferLoader(window.waveformContext, [file], function(bufferList) {
 		var source = window.waveformContext.createBufferSource();

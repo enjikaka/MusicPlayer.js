@@ -87,8 +87,7 @@
 		<div id="loading-container"></div>
 
 		<h2>Waveform</h2>
-		<img id="waveform-imagery" width="400" height="110" alt="Waveform">
-
+		<img id="waveform-imagery" width="400" height="110" alt="Waveform"><br>
 		<h3>Waveform Settings</h3>
 		<label for="bar-width">Bar-width</label>
 		<select name="bar-width" id="bar-width">
@@ -123,6 +122,7 @@
 
 		<script src="scripts/zepto.min.js"></script>
 		<script src="scripts/id3.min.js"></script>
+		<script src="scripts/svgcanvas.js"></script>
 		<script src="scripts/WaveformGenerator.min.js"></script>
 		<script src="scripts/MusicPlayer.js"></script>
 		<script>
@@ -140,8 +140,9 @@
 			};
 			MusicPlayer.init(settings);
 			document.querySelector('#remake-waves').onclick = function() {
-				var awg = new WaveformGenerator(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, function(a) {
+				var awg = new WaveformGenerator(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, 1, function(a,b) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
+            window.open(b);
         });
 			};
 		}

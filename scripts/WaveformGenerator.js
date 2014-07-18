@@ -1,7 +1,7 @@
 window.waveformCanvas = document.createElement('canvas');
 window.waveformCanvasContext = window.waveformCanvas.getContext('2d');
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-window.waveformContext = new AudioContext() || new webkitAudioContext();
+window.waveformContext = new AudioContext();
 window.waveformBarWidth = 1;
 window.waveformBarGap = 0;
 window.waveformBarAlign = 0;
@@ -67,6 +67,8 @@ function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
 	window.svg = document.createElement('svg');
 	window.svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 	window.svg.setAttribute('version', '1.1');
+	window.svg.setAttribute('width', '100%');
+	window.svg.setAttribute('height', '100%');
 	var svgStyleSheet = document.createElement('style');
 	svgStyleSheet.setAttribute('type', 'text/css');
 	var sssc = document.createTextNode('<![CDATA[path{stroke:' + color + ';stroke-width:' + ((barWidth !== 0) ? (barWidth * Math.abs(1 - gapWidth)) : barWidth) + '}]]>');

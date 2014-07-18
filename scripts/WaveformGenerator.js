@@ -70,7 +70,7 @@ function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
 	var sssc = document.createTextNode('<![CDATA[path{stroke:' + color + ';stroke-width:' + ((barWidth !== 0) ? (barWidth * Math.abs(1 - gapWidth)) : barWidth) + '}]]>');
 	svgStyleSheet.appendChild(sssc);
 	window.svg.appendChild(svgStyleSheet);
-	window.svg.setAttributeNS('http://www.w3.org/2000/svg', 'viewBox', '0 0 ' + width + ' ' + height);
+	window.svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
 	// End of SVG stuff.
 
 	var bufferLoader = new BufferLoader(window.waveformContext, [file], function(bufferList) {
@@ -97,7 +97,7 @@ Waveform.bufferExtract = function(sections, out) {
 			}
 		}
 		if (i == sections) {
-			window.retFunc(window.waveformCanvas.toDataURL(), 'data:image/svg+xml;base64,' + btoa(window.svg.outerHTML));
+			window.retFunc(window.waveformCanvas.toDataURL(), 'data:image/svg+xml;base64,' + btoa('<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">') + btoa(window.svg.outerHTML));
 		}
 		return res;
 	};

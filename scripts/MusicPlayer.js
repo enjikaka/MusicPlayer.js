@@ -194,20 +194,14 @@ var MusicPlayer = {
         if (MusicPlayer.debug) {
             console.debug('Open file.');
         }
-        if (window.File && window.FileReader && window.FileList && window.Blob) {
-            $(MusicPlayer.settings.elements.fileOpener).click();
-        } else {
-            if (MusicPlayer.debug) {
-                console.error('The File APIs are not fully supported in this browser.');
-            }
-        }
+        document.querySelector(MusicPlayer.settings.elements.fileOpener).click();
     },
     load: function(url) {
         console.debug('Loading file...');
         MusicPlayer.get().src = url;
         document.querySelector(MusicPlayer.settings.elements.waveformImage).src = 'loading.png';
         document.querySelector(MusicPlayer.settings.elements.waveformImage).alt = "Loading waveform...";
-        var awg = new Waveform(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
+        var awg = new Waveform(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#2ecc71', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
             document.querySelector('#waveform-svg').src = b;
         });
@@ -462,7 +456,7 @@ $(window).on('load', function() {
     $(elements.button.stop).on('click', MusicPlayer.stop);
     $(elements.button.next).on('click', MusicPlayer.next);
     $(elements.button.previous).on('click', MusicPlayer.previous);
-    $(elements.button.open).on('click', MusicPlayer.selectFile);
+    document.querySelector(elements.button.open).onclick = MusicPlayer.selectFile;
     $(elements.button.volumeUp).on('click', MusicPlayer.volume.up);
     $(elements.button.volumeDown).on('click', MusicPlayer.volume.down);
 

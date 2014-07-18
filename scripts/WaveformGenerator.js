@@ -1,6 +1,7 @@
 window.waveformCanvas = document.createElement('canvas');
 window.waveformCanvasContext = window.waveformCanvas.getContext('2d');
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
+window.waveformContext = new AudioContext();
 window.waveformBarWidth = 1;
 window.waveformBarGap = 0;
 window.waveformBarAlign = 0;
@@ -49,9 +50,6 @@ BufferLoader.prototype.load = function() {
 };
 
 function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
-	// New context needed.
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
 	barWidth = parseInt(barWidth);
 	gapWidth = parseFloat(gapWidth);
 	color = (color !== undefined ? color : 'black');
@@ -75,7 +73,6 @@ function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
 	window.svg.setAttributeNS('http://www.w3.org/2000/svg', 'viewBox', '0 0 ' + width + ' ' + height);
 	// End of SVG stuff.
 
-	window.waveformContext = new AudioContext();
 	var bufferLoader = new BufferLoader(window.waveformContext, [file], function(bufferList) {
 		var source = window.waveformContext.createBufferSource();
 		source.buffer = bufferList[0];
@@ -120,7 +117,7 @@ Waveform.bufferMeasure = function(a, b, data) {
 Waveform.drawBar = function(i, val) {
 	var ctx = window.waveformCanvasContext;
 	ctx.fillStyle = window.waveformBarColor;
-	var h = val * 50 * window.waveformCanvas.height, barWidth = window.waveformBarWidth;
+	var h = val * 40 * window.waveformCanvas.height, barWidth = window.waveformBarWidth;
 	if (window.waveformBarGap !== 0) {
 		barWidth *= Math.abs(1 - window.waveformBarGap);
 	}

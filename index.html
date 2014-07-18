@@ -55,6 +55,10 @@
 			font-size:30px;
 			color:#9b59b6;
 		}
+		strong.waveform {
+			display:block;
+			padding:0.5em 0 1em 0;
+		}
 		</style>
 	</head>
 	<body>
@@ -87,8 +91,10 @@
 		<div id="loading-container"></div>
 
 		<h2>Waveform</h2>
-		<img id="waveform-imagery" width="400" height="110" alt="Waveform"><br>
-		<iframe id="waveform-svg" width="400" height="110" frameborder="0"></iframe>
+		<strong class="waveform">Canvas</strong>
+		<img id="waveform-imagery" width="600" height="125" alt="Waveform">
+		<strong class="waveform">SVG</strong>
+		<iframe id="waveform-svg" width="600" height="125" frameborder="0"></iframe>
 		<h3>Waveform Settings</h3>
 		<label for="bar-width">Bar-width</label>
 		<select name="bar-width" id="bar-width">
@@ -101,7 +107,9 @@
 		<label for="bar-gaps">Gaps-width</label>
 		<select name="bar-gaps" id="bar-gaps">
 			<option value="0">0</option>
-			<option value="0.2" selected>0.2</option>
+			<option value="0.2">0.2</option>
+			<option value="0.3" selected>0.3</option>
+			<option value="0.4">0.4</option>
 			<option value="0.5">0.5</option>
 			<option value="0.8">0.8</option>
 		</select>
@@ -145,7 +153,7 @@
 			};
 			MusicPlayer.init(settings);
 			document.querySelector('#remake-waves').onclick = function() {
-				var awg = new Waveform(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
+				var awg = new Waveform(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#2ecc71', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
             document.querySelector('#waveform-svg').src = b;
         });

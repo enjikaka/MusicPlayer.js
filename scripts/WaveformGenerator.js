@@ -116,7 +116,7 @@ Waveform.drawBar = function(i, val) {
 	}
 	var x = i + (w / 2), y = window.waveformCanvas.height - h, path = document.createElement('path');
 	y = (window.waveformBarAlign !== 1) ? window.waveformCanvas.height / 2 - h / 2 : y;
-	path.setAttribute('d','M'+x+' '+y+' L'+parseFloat(x)+' '+y+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+y+' Z');
+	path.setAttribute('d','M'+x+' '+y+' L'+x+' '+y+' L'+x+' '+(y+h)+' L'+x+' '+(y+h)+' L'+x+' '+y+' Z');
 	window.svg.appendChild(path);
 	return ctx.fillRect(i, y, w, h);
 };

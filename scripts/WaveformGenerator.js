@@ -91,7 +91,7 @@ Waveform.bufferExtract = function(sections, out) {
 		Waveform.drawBar(i, Waveform.bufferMeasure(pos, pos + len, buffer));
 	}
 	if (i >= sections) {
-		window.retFunc(window.waveformCanvas.toDataURL(), 'data:image/svg+xml;base64,' + btoa('<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">') + btoa(window.svg.outerHTML));
+		window.retFunc(window.waveformCanvas.toDataURL(), URL.createObjectURL(new Blob(['<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + window.svg.outerHTML], {type: 'image/svg+xml'})));
 	}
 };
 

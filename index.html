@@ -23,17 +23,28 @@
 			display:block;
 		}
 		.pbh {
-			width:400px;
+			width:600px;
 			height:30px;
 			background:#bdc3c7;
 			display:block;
 			border-radius:4px;
 			margin:0.4em 0;
+			stroke:red;
 		}
 		.pb {
 			height:100%;
 			background-color:#2ecc71;
 			display:block;
+		}
+		#progress-holder {
+			width:600px;
+			height:100px;
+			background:none;
+			background-position: -1px 0;
+			background-repeat: no-repeat;
+		}
+		#progress-holder .pb {
+				opacity:0.8;
 		}
 		.hidden {
 			display:none;
@@ -92,9 +103,9 @@
 
 		<h2>Waveform</h2>
 		<strong class="waveform">Canvas</strong>
-		<img id="waveform-imagery" width="600" height="125" alt="Waveform">
+		<img id="waveform-imagery" width="600" height="100" alt="Waveform">
 		<strong class="waveform">SVG</strong>
-		<iframe id="waveform-svg" width="600" height="125" frameborder="0"></iframe>
+		<iframe id="waveform-svg" width="600" height="100" frameborder="0"></iframe>
 		<h3>Waveform Settings</h3>
 		<label for="bar-width">Bar-width</label>
 		<select name="bar-width" id="bar-width">
@@ -153,7 +164,7 @@
 			};
 			MusicPlayer.init(settings);
 			document.querySelector('#remake-waves').onclick = function() {
-				var awg = new Waveform(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#2ecc71', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
+				var awg = new Waveform(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#3498db', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
             document.querySelector('#waveform-svg').src = b;
         });

@@ -201,9 +201,10 @@ var MusicPlayer = {
         MusicPlayer.get().src = url;
         document.querySelector(MusicPlayer.settings.elements.waveformImage).src = 'loading.png';
         document.querySelector(MusicPlayer.settings.elements.waveformImage).alt = "Loading waveform...";
-        var awg = new Waveform(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#2ecc71', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
+        var awg = new Waveform(url,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#3498db', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
             document.querySelector('#waveform-svg').src = b;
+            document.querySelector('#progress-holder').style.backgroundImage = 'url('+b+')';
         });
     },
     durationPercent: function() {

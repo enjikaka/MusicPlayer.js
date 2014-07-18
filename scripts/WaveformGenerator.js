@@ -48,45 +48,51 @@ BufferLoader.prototype.load = function() {
 	}
 };
 
-function WaveformGenerator(file,width,height,color,barWidth,gapWidth,align,retFunc) {
-	barWidth=parseInt(barWidth);
-	gapWidth=parseFloat(gapWidth);
-	color=(color !== undefined ? color : 'black');
+function Waveform(file,width,height,color,barWidth,gapWidth,align,retFunc) {
+	// New context needed.
+	window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+	barWidth = parseInt(barWidth);
+	gapWidth = parseFloat(gapWidth);
+	color = (color !== undefined ? color : 'black');
 	window.waveformCanvas.width = width;
 	window.waveformCanvas.height = height;
 	window.waveformBarWidth = barWidth;
 	window.waveformBarGap = gapWidth;
-	window.waveformBarAlign = align;
+	window.waveformBarAlign = parseInt(align);
 	window.waveformBarColor = color;
 	window.retFunc = retFunc;
+
+	// SVG stuff
 	window.svg = document.createElement('svg');
 	window.svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 	window.svg.setAttribute('version', '1.1');
 	var svgStyleSheet = document.createElement('style');
 	svgStyleSheet.setAttribute('type', 'text/css');
-	var sssc = document.createTextNode('<![CDATA[');
-	sssc.textContent += 'path {stroke:'+color+';stroke-width:'+((barWidth !== 0) ? (barWidth * Math.abs(1 - gapWidth)) : barWidth)+'}]]>';
+	var sssc = document.createTextNode('<![CDATA[path{stroke:' + color + ';stroke-width:' + ((barWidth !== 0) ? (barWidth * Math.abs(1 - gapWidth)) : barWidth) + '}]]>');
 	svgStyleSheet.appendChild(sssc);
 	window.svg.appendChild(svgStyleSheet);
 	window.svg.setAttributeNS('http://www.w3.org/2000/svg', 'viewBox', '0 0 ' + width + ' ' + height);
+	// End of SVG stuff.
+
 	window.waveformContext = new AudioContext();
-	var bufferLoader = new BufferLoader(window.waveformContext,[file],function(bufferList) {
+	var bufferLoader = new BufferLoader(window.waveformContext, [file], function(bufferList) {
 		var source = window.waveformContext.createBufferSource();
 		source.buffer = bufferList[0];
 		window.waveformBuffer = bufferList[0];
-		WaveformGenerator.bufferExtract(window.waveformCanvas.width, WaveformGenerator.drawBar);
+		Waveform.bufferExtract(window.waveformCanvas.width, Waveform.drawBar);
 	});
 	bufferLoader.load();
 }
 
-WaveformGenerator.bufferExtract = function(sections, out) {
+Waveform.bufferExtract = function(sections, out) {
 	var buffer = window.waveformBuffer.getChannelData(0);
 	var inv, len = Math.floor(buffer.length / sections), i = 0;
 	var f = function() {
 		var end = len, pos, res;
 		while (i < end) {
 			pos = i * len;
-			out(i, WaveformGenerator.bufferMeasure(pos, pos + len, buffer));
+			out(i, Waveform.bufferMeasure(pos, pos + len, buffer));
 			i += window.waveformBarWidth;
 			if (i >= sections) {
 				clearInterval(inv);
@@ -102,7 +108,7 @@ WaveformGenerator.bufferExtract = function(sections, out) {
 	return inv;
 };
 
-WaveformGenerator.bufferMeasure = function(a, b, data) {
+Waveform.bufferMeasure = function(a, b, data) {
 	var i, s, sum = 0.0, ref;
 	for (i = a, ref = b - 1; a <= ref ? i <= ref : i >= ref; a <= ref ? i++ : i--) {
 		s = data[i];
@@ -111,18 +117,14 @@ WaveformGenerator.bufferMeasure = function(a, b, data) {
 	return Math.sqrt(sum / data.length);
 };
 
-WaveformGenerator.drawBar = function(i, val) {
+Waveform.drawBar = function(i, val) {
 	var ctx = window.waveformCanvasContext;
 	ctx.fillStyle = window.waveformBarColor;
-	var h;
-	console.log('val:' + val);
-	h = val * 50 * window.waveformCanvas.height;
-	var barWidth = window.waveformBarWidth;
+	var h = val * 50 * window.waveformCanvas.height, barWidth = window.waveformBarWidth;
 	if (window.waveformBarGap !== 0) {
 		barWidth *= Math.abs(1 - window.waveformBarGap);
 	}
-	var x = i + (barWidth / 2), y = window.waveformCanvas.height - h;
-	var path = document.createElement('path');
+	var x = i + (barWidth / 2), y = window.waveformCanvas.height - h, path = document.createElement('path');
 	if (window.waveformBarAlign === 1) {
 		path.setAttribute('d','M'+x+' '+y+' L'+parseFloat(x)+' '+y+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+parseFloat(y+h)+' L'+x+' '+y+' Z');
 		

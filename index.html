@@ -88,6 +88,7 @@
 
 		<h2>Waveform</h2>
 		<img id="waveform-imagery" width="400" height="110" alt="Waveform"><br>
+		<iframe id="waveform-svg" width="400" height="110" frameborder="0"></iframe>
 		<h3>Waveform Settings</h3>
 		<label for="bar-width">Bar-width</label>
 		<select name="bar-width" id="bar-width">
@@ -103,6 +104,11 @@
 			<option value="0.2" selected>0.2</option>
 			<option value="0.5">0.5</option>
 			<option value="0.8">0.8</option>
+		</select>
+		<label for="bar-align">Align-bars</label>
+		<select name="bar-align" id="bar-align">
+			<option value="0" selected>Center</option>
+			<option value="1">Bottom</option>
 		</select>
 		<button id="remake-waves">Re-generate waveform</button>
 
@@ -122,7 +128,6 @@
 
 		<script src="scripts/zepto.min.js"></script>
 		<script src="scripts/id3.min.js"></script>
-		<script src="scripts/svgcanvas.js"></script>
 		<script src="scripts/WaveformGenerator.min.js"></script>
 		<script src="scripts/MusicPlayer.js"></script>
 		<script>
@@ -140,9 +145,9 @@
 			};
 			MusicPlayer.init(settings);
 			document.querySelector('#remake-waves').onclick = function() {
-				var awg = new WaveformGenerator(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, 1, function(a,b) {
+				var awg = new Waveform(MusicPlayer.get().src,document.querySelector(MusicPlayer.settings.elements.waveformImage).width,document.querySelector(MusicPlayer.settings.elements.waveformImage).height,'#ff7d40', document.querySelector('#bar-width').value, document.querySelector('#bar-gaps').value, document.querySelector('#bar-align').value, function(a,b) {
             document.querySelector(MusicPlayer.settings.elements.waveformImage).src = a;
-            window.open(b);
+            document.querySelector('#waveform-svg').src = b;
         });
 			};
 		}

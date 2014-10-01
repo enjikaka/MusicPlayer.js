@@ -49,7 +49,6 @@ var MusicPlayer = {
                 year: '#song-year',
                 comment: '#song-comment',
                 track: '#song-track',
-                comment: '#song-comment',
                 genre: '#song-genre',
                 picture: '#song-picture',
                 lyrics: '#song-lyrics'
@@ -92,9 +91,9 @@ var MusicPlayer = {
         }
     },
     getInfoFromFilename: function(name, a) {
-        name = name == null ? 'Unkown' : name;
+        name = name === null ? 'Unkown' : name;
         name = name.replace(/_/g, ' ');
-        var artist = artist == null ? 'Unkown' : artist;
+        var artist = artist === null ? 'Unkown' : artist;
         if (name.indexOf(' - ') !== -1) {
             name = name.split(' - ');
             artist = name[0];
@@ -104,10 +103,8 @@ var MusicPlayer = {
         switch (a) {
             case 'a':
                 return artist;
-                break;
             default:
                 return name;
-                break;
         }
     },
     showMetadata: function() {
@@ -166,7 +163,7 @@ var MusicPlayer = {
         return $(MusicPlayer.settings.player)[0];
     },
     play: function() {
-        if (MusicPlayer.get().currentSrc == "") {
+        if (MusicPlayer.get().currentSrc === '') {
             // No music file loaded
             if (MusicPlayer.debug) {
                 console.error('Cannot play audio. There is not source.');
@@ -243,19 +240,20 @@ var MusicPlayer = {
                         console.debug('Checking for ID3 tags.');
                     }
                     var tagReader = new FileReader();
-                    tagReader.onloadend = function(e) {
-                        ID3.loadTags(file.urn, function() {
-                            MusicPlayer.readMetadata(file.urn, file.name);
-                        }, {
-                            tags: ["title", "artist", "picture", "album", "year"],
-                            dataReader: FileAPIReader(file)
-                        });
-                    };
+                    tagReader.onloadend = MusicPlayer.handler.tagReaderLoad;
                     tagReader.readAsDataURL(file);
                 } else {
                     console.error('Not an audio file.');
                 }
             }
+        },
+        tagReaderLoad: function() {
+          ID3.loadTags(file.urn, function() {
+              MusicPlayer.readMetadata(file.urn, file.name);
+          }, {
+              tags: ["title", "artist", "picture", "album", "year"],
+              dataReader: FileAPIReader(file)
+          });
         },
         play: function(e) {
             if (MusicPlayer.debug) {
